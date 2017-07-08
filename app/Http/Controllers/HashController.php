@@ -7,6 +7,7 @@ use Session;
 use App\Vocabulary;
 use App\Hash;
 use App\UserInfo;
+use App\Services\GeoIp\SingletonGeoIp;
 
 
 class HashController extends Controller
@@ -16,32 +17,26 @@ class HashController extends Controller
 		    $cart = Session::get('cart');
 		    foreach ($cart->wordItem as $id => $value) {
 			    foreach ($value['encrypt'] as $algorithm => $hash) {
-				    $hash = Hash::firstOrNew([
+				    $hashTable = Hash::firstOrNew([
 					    'vocabulary_id' =>  $id,
 					    'algorithm' =>  $algorithm,
 					    'hash' => $hash
 				    ]);
-				    if (! $hash->exists){
-					    $hash->save();
-					    $hash= $hash->toArray();
-					    $hash['word'] = $value['word'];
-					    $UserInfo['hash'][]= $hash;
+				    if (! $hashTable->exists){
+					    $hashTable->save();
+					    $UserInfo= $hashTable->toArray();
+					    $UserInfo['word'] = $value['word'];
+					    $UserInfo['hash']= $hash;
+					    $GeoIp = SingletonGeoIp::getInstance();
+					    $info = $GeoIp->get();
+					    $UserInfo= array_merge($UserInfo, $info );
+					    $json = json_encode ($UserInfo);
+					    $info = new UserInfo;
+					    $info->info = $json;
+					    $info->save();
 				    }
 			    }
 		    }
 	    }
-		if (isset($UserInfo)) {
-			$geoIp = geoip()->getLocation();
-			$UserInfo['info']['ip'] = $geoIp['ip'];
-			$UserInfo['info']['country'] =  $geoIp['country'];
-			$UserInfo['info']['cookie'] = request()->cookie();
-			$UserInfo['info']['agent'] = request()->header('User-Agent');
-			$json = json_encode ($UserInfo);
-
-			$info = new UserInfo;
-			$info->info = $json;
-			$info->save();
-		}
-
     }
 }
