@@ -31,7 +31,7 @@ class Cart
 
 	public function addHash($hash) {;
 		if (count($this->words) > 0) {
-			foreach ($this->words as $key=> $value) {
+			foreach ($this->words as $key => $value) {
 				$this->wordItem[$key]['encrypt'][$hash] =  hash ($hash, $value);
 			}
 		}
@@ -41,8 +41,8 @@ class Cart
 
 	public function removeHash ($hash) {
 		if (count($this->words) > 0) {
-			foreach ($this->words as $word) {
-				unset($this->wordItem[$word]['encrypt'][$hash]);
+			foreach ($this->words as $key => $value) {
+				unset($this->wordItem[$key]['encrypt'][$hash]);
 			}
 		}
 		unset($this->hash[$hash]);
