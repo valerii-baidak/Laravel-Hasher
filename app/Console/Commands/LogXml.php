@@ -41,24 +41,20 @@ class LogXml extends Command
      */
     public function handle()
     {
-        $user = UserInfo::select('info')->get();
-        if (! $user->isEmpty()) {
-            $user = $user->toArray();
-            foreach ($user as $key => $value) {
-                $array[] = json_decode($value['info'], true);
-            }
+        $newUserInfo = UserInfo::pluck('info');
+        if (! $newUserInfo->isEmpty()) {
+            $userInfo = $newUserInfo->toArray();
             if (Storage::disk('local')->exists('userInfo.xml')) {
                 $oldXml = Storage::get('userInfo.xml');
                 $formatter = Formatter::make($oldXml, Formatter::XML);
-                $oldArray = $formatter->toArray();
-                $oldArray = $oldArray['item'];
-                $array = array_merge($array, $oldArray);
+                $oldUserInfo = $formatter->toArray();
+                $oldUserInfo = $oldUserInfo['item'];
+                $userInfo = array_merge($userInfo, $oldUserInfo);
             }
-            $formatter = Formatter::make($array, Formatter::ARR);
+            $formatter = Formatter::make($userInfo, Formatter::ARR);
             $xml = $formatter->toXml();
             Storage::disk('local')->put('userInfo.xml', $xml);
             DB::table('user_info')->delete();
         }
-
     }
 }

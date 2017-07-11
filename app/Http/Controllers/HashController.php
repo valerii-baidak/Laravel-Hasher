@@ -4,11 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Session;
-use App\Vocabulary;
 use App\Hash;
 use App\UserInfo;
-use App\Services\GeoIp\SingletonGeoIp;
-
 
 class HashController extends Controller
 {
@@ -22,18 +19,18 @@ class HashController extends Controller
 					    'algorithm' =>  $algorithm,
 					    'hash' => $hash
 				    ]);
+
 				    if (! $hashTable->exists){
 					    $hashTable->save();
-					    $UserInfo= $hashTable->toArray();
-					    $UserInfo['word'] = $value['word'];
-					    $UserInfo['hash']= $hash;
-					    $GeoIp = SingletonGeoIp::getInstance();
-					    $info = $GeoIp->get();
-					    $UserInfo= array_merge($UserInfo, $info );
-					    $json = json_encode ($UserInfo);
-					    $info = new UserInfo;
-					    $info->info = $json;
-					    $info->save();
+					    $userHash = $hashTable->toArray();
+					    $userHash['word'] = $value['word'];
+					    $userHash['hash']= $hash;
+					    $userInformation = resolve('App\Services\UserInformation');
+					    $userInformation  = $userInformation->get();
+					    $userInfoHash = array_merge($userHash, $userInformation );
+					    $userInfo = new UserInfo;
+					    $userInfo->info =  $userInfoHash;
+					    $userInfo->save();
 				    }
 			    }
 		    }

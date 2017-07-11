@@ -181,6 +181,8 @@ return [
 //      User Location
         \Torann\GeoIP\GeoIPServiceProvider::class,
 
+        App\Providers\UserInformationServiceProvider::class
+
     ],
 
     /*

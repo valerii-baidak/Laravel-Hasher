@@ -12,14 +12,19 @@
 */
 
 Route::get('/', 'NavigationController@index');
-
-Route::post('/algorithm/add', 'AlgorithmController@add');
-Route::post('/algorithm/remove', 'AlgorithmController@remove');
-
-Route::post('/word/add', 'WordController@add');
-Route::post('/word/remove', 'WordController@remove');
-
 Route::post('/save', 'HashController@save');
+
+Route::group (['prefix' => 'algorithm'], function(){
+	Route::post('add', 'AlgorithmController@add');
+	Route::post('remove', 'AlgorithmController@remove');
+});
+
+Route::group (['prefix' => 'word'], function(){
+	Route::post('add', 'WordController@add');
+	Route::post('remove', 'WordController@remove');
+});
+
+
 
 
 
